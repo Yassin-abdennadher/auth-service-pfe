@@ -3,31 +3,46 @@ pipeline {
     
     stages {
         stage('Checkout') {
-            steps { checkout scm }
+            steps {
+                // Pas besoin de checkout scm, on va dans un dossier avec permissions
+                dir('auth-service') {
+                    git url: 'https://github.com/Yassin-abdennadher/auth-service-pfe.git', branch: 'master'
+                }
+            }
         }
         
         stage('Install') {
-            steps { sh 'npm install' }
+            steps {
+                dir('auth-service') {
+                    sh 'npm install'
+                }
+            }
         }
         
         stage('Build') {
-            steps { sh 'npm run build' }
-        }
-        
-        stage('Test') {
-            steps { sh 'npm test || echo "No tests"' }
+            steps {
+                dir('auth-service') {
+                    sh 'npm run build'
+                }
+            }
         }
         
         stage('Docker Build') {
-            steps { 
-                sh 'docker build -t auth-service .' 
+            steps {
+                dir('auth-service') {
+                    sh 'docker build -t auth-service .'
+                }
             }
         }
         
         stage('Deploy') {
             when { branch 'master' }
             steps {
-                sh 'docker run -d --name auth-service --network gmao-network -p 4001:4001 auth-service'
+                sh '''
+                    docker stop auth-service || true
+                    docker rm auth-service || true
+                    docker run -d --name auth-service --network gmao-network -p 4001:4001 auth-service
+                '''
             }
         }
     }
