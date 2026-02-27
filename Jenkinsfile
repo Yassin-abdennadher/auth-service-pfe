@@ -1,37 +1,33 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
     
     stages {
         stage('Checkout') {
             steps {
-                // Pas besoin de checkout scm, on va dans un dossier avec permissions
-                dir('auth-service') {
-                    git url: 'https://github.com/Yassin-abdennadher/auth-service-pfe.git', branch: 'master'
-                }
+                git url: 'https://github.com/Yassin-abdennadher/auth-service-pfe.git', branch: 'master'
             }
         }
         
         stage('Install') {
             steps {
-                dir('auth-service') {
-                    sh 'npm install'
-                }
+                sh 'npm install'
             }
         }
         
         stage('Build') {
             steps {
-                dir('auth-service') {
-                    sh 'npm run build'
-                }
+                sh 'npm run build'
             }
         }
         
         stage('Docker Build') {
             steps {
-                dir('auth-service') {
-                    sh 'docker build -t auth-service .'
-                }
+                sh 'docker build -t auth-service .'
             }
         }
         
