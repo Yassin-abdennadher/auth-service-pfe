@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+        
+        stage('Install') {
+            steps { sh 'npm install' }
+        }
+        
+        stage('Build') {
+            steps { sh 'npm run build' }
+        }
+        
+        stage('Test') {
+            steps { sh 'npm test || echo "No tests"' }
+        }
+        
+        stage('Docker Build') {
+            steps { 
+                sh 'docker build -t auth-service .' 
+            }
+        }
+        
+        stage('Deploy') {
+            when { branch 'master' }
+            steps {
+                sh 'docker run -d --name auth-service --network gmao-network -p 4001:4001 auth-service'
+            }
+        }
+    }
+}
