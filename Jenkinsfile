@@ -1,12 +1,12 @@
 pipeline {
     agent any
     
-    stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/Yassin-abdennadher/auth-service-pfe.git', branch: 'master'
-            }
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
+    }
         
         stage('Install') {
             steps {
