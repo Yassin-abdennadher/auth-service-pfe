@@ -1,5 +1,5 @@
 pipeline {
-    agent any  // ← Pas de docker
+    agent any
     
     stages {
         stage('Checkout') {
@@ -10,10 +10,37 @@ pipeline {
         
         stage('Install') {
             steps {
-                sh 'npm install || echo "npm not installed"'
+                sh 'npm install'
             }
         }
         
-        // Pour l'instant, on skip le build Docker
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'npm test || echo "No tests"'
+            }
+        }
+        
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t auth-service .'
+            }
+        }
+        
+        stage('Deploy') {
+            when { branch 'master' }
+            steps {
+                sh '''
+                    docker stop auth-service || true
+                    docker rm auth-service || true
+                    docker run -d --name auth-service --network gmao-network -p 4001:4001 auth-service
+                '''
+            }
+        }
     }
 }
