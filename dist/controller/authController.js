@@ -1,12 +1,8 @@
-import type { Request, Response } from 'express';
 import express from 'express';
 import * as authService from '../service/authService.js';
 import * as jwtService from '../service/jwtService.js';
 const router = express.Router();
-
-
-
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await authService.login(email, password);
@@ -24,100 +20,91 @@ router.post('/login', async (req: Request, res: Response) => {
                 role: user.role
             }
         });
-    } catch (error: any) {
+    }
+    catch (error) {
         return res.status(400).json({
             success: false,
             error: error.message
-        })
+        });
     }
 });
-
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req, res) => {
     try {
         const user = await authService.createUser(req.body);
-
         res.status(201).json({
             success: true,
             data: user,
             message: "Utilisateur créé avec succès"
         });
-
-    } catch (error: any) {
+    }
+    catch (error) {
         res.status(400).json({
             success: false,
             error: error.message
         });
     }
 });
-
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req, res) => {
     try {
         const users = await authService.getAllUsers();
-
         res.json({
             success: true,
             count: users.length,
             data: users
         });
-
-    } catch (error: any) {
+    }
+    catch (error) {
         res.status(500).json({
             success: false,
             error: error.message
         });
     }
 });
-
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', async (req, res) => {
     try {
-        const user = await authService.getUserById(req.params.id as string);
-
+        const user = await authService.getUserById(req.params.id);
         res.json({
             success: true,
             data: user
         });
-
-    } catch (error: any) {
+    }
+    catch (error) {
         res.status(404).json({
             success: false,
             error: error.message
         });
     }
 });
-
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req, res) => {
     try {
-        const user = await authService.updateUser(req.params.id as string, req.body);
-
+        const user = await authService.updateUser(req.params.id, req.body);
         res.json({
             success: true,
             data: user,
             message: "Utilisateur mis à jour"
         });
-
-    } catch (error: any) {
+    }
+    catch (error) {
         res.status(400).json({
             success: false,
             error: error.message
         });
     }
 });
-
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req, res) => {
     try {
-        const result = await authService.deleteUser(req.params.id as string);
-
+        const result = await authService.deleteUser(req.params.id);
         res.json({
             success: true,
             data: result
         });
-
-    } catch (error: any) {
+    }
+    catch (error) {
         res.status(404).json({
             success: false,
             error: error.message
         });
     }
 });
-
 export default router;
+//# sourceMappingURL=authController.js.map

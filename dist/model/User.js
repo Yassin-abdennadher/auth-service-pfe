@@ -1,16 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/postgresqlConfig.js';
-
-export interface IUser {
-    id: number,
-    userFullname: string,
-    username: string,
-    email: string,
-    password: string,
-    role: 'admin' | 'technicien' | 'user'
-}
-
-
 const User = sequelize.define('User', {
     userFullname: {
         type: DataTypes.STRING(100),
@@ -53,5 +42,5 @@ const User = sequelize.define('User', {
         }
     }
 });
-
 export default User;
+//# sourceMappingURL=User.js.map
