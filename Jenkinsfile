@@ -2,49 +2,46 @@ pipeline {
     agent {
         docker {
             image 'node:18-alpine'
+            label 'docker'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
-    
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/Yassin-abdennadher/auth-service-pfe.git', branch: 'master'
+                checkout scm
             }
         }
-        
         stage('Install') {
             steps {
                 sh 'npm install'
             }
         }
-        
         stage('Build') {
             steps {
                 sh 'npm run build'
             }
         }
-        
         stage('Test') {
             steps {
-                sh 'npm test || echo "No tests"'
+                sh 'npm test || echo "No tests found"'
             }
         }
-        
         stage('Docker Build') {
             steps {
                 sh 'docker build -t auth-service .'
             }
         }
-        
         stage('Deploy') {
             when { branch 'master' }
             steps {
-                sh '''
-                    docker stop auth-service || true
-                    docker rm auth-service || true
-                    docker run -d --name auth-service --network gmao-network -p 4001:4001 auth-service
-                '''
+                script {
+                    sh '''
+                        docker stop auth-service || true
+                        docker rm auth-service || true
+                        docker run -d --name auth-service --network gmao-network -p 4001:4001 auth-service
+                    '''
+                }
             }
         }
     }
