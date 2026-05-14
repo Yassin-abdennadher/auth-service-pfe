@@ -20,7 +20,9 @@ export const generateToken = (user) => {
 };
 export const generateRefreshToken = (user) => {
     const payload = {
-        email: user.email
+        id: user.id,
+        email: user.email,
+        role: user.role
     };
     if (!refreshSecret)
         throw new Error('JWT_REFRESH_SECRET manquant');

@@ -7,6 +7,7 @@ dotenv.config();
 import sequelize from './config/postgresqlConfig.js';
 import authController from './controller/authController.js';
 import verifyTokenController from './controller/verifyTokenController.js';
+import refreshController from './controller/refreshController.js';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(helmet());
 
 app.use('/users', authController);
 app.use('/verify', verifyTokenController);
+app.use('/refresh',refreshController);
 
 try {
     await sequelize.authenticate();
@@ -25,7 +27,7 @@ try {
     await sequelize.sync({ alter: true });
 
     const server = app.listen(process.env.PORT, () => {
-        console.log(`🚀 Auth service sur port : ${process.env.PORT}`);
+        console.log(`🚀 Auth service sur port 1 : ${process.env.PORT}`);
     });
 
     server.keepAliveTimeout = 65000;
